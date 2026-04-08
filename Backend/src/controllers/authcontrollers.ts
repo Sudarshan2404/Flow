@@ -1,0 +1,51 @@
+import type { Request, Response } from "express";
+import z from "zod";
+
+type registerType = {
+  username: string;
+  email: string;
+  name: string;
+  password: string;
+};
+
+type logintype = {
+  username: string;
+  name: string;
+};
+
+const registerSchema = z.object({
+  email: z.email().toLowerCase(),
+  username: z.string().min(4),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .max(20, { message: "Password must be less than 20 characters" })
+    .refine((val) => /[A-Z]/.test(val), {
+      message: "Password must contain at least one uppercase letter",
+    })
+    .refine((val) => /[a-z]/.test(val), {
+      message: "Password must contain at least one lowercase letter",
+    })
+    .refine((val) => /[0-9]/.test(val), {
+      message: "Password must contain at least one number",
+    })
+    .refine((val) => /[!@#$%^&*]/.test(val), {
+      message: "Password must contain at least one special character",
+    }),
+  name: z.string().min(4).toLowerCase(),
+});
+
+export const register = async (req: Request, res: Response) => {
+  try {
+    const parsed = registerSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        success: false,
+        message: "Wrong Input: " + parsed.error.message,
+      });
+    }
+
+    const { email, username, name, password } = parsed.data;
+  } catch (error) {}
+};
