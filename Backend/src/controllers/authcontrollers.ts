@@ -145,7 +145,7 @@ export const login = async (req: Request, res: Response) => {
         .json({ success: false, message: "Invalid password" });
     }
 
-    res.status(200).json({ success: false, message: "Logged in successfully" });
+    res.status(200).json({ success: true, message: "Logged in successfully" });
   } catch (error) {
     console.log("An error occured while logging in", error);
     res.status(500).json({ success: false, message: "internal server error" });
