@@ -1,1 +1,1 @@
-{"root":["./src/server.ts"],"version":"6.0.2"}
+{"root":["./src/server.ts","./src/config/db.ts","./src/controllers/authcontrollers.ts","./src/models/users.ts","./src/models/messages.ts","./src/routes/authroutes.ts","./src/services/gentoken.service.ts"],"version":"6.0.2"}

@@ -2,14 +2,21 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
+import dotenv from "dotenv";
+import { connectDB } from "./config/db.js";
+import Authroutes from "./routes/authroutes.js";
 const app = express();
+dotenv.config();
 app.use(cors());
+app.use(express.json());
+app.use("/api/auth", Authroutes);
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: " http://localhost:5173",
     },
 });
+connectDB();
 const onlineusers = new Map();
 io.on("connection", (socket) => {
     console.log("user connected", socket.id);

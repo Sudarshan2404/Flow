@@ -1,5 +1,8 @@
 import type { Request, Response } from "express";
-import z from "zod";
+import z, { success } from "zod";
+import jwt from "jsonwebtoken";
+import { User } from "../models/Users.js";
+import { genreatetoken } from "../services/genToken.service.js";
 
 type registerType = {
   username: string;
@@ -40,12 +43,52 @@ export const register = async (req: Request, res: Response) => {
     const parsed = registerSchema.safeParse(req.body);
 
     if (!parsed.success) {
+      const errorm = parsed.error.message;
       return res.status(400).json({
         success: false,
-        message: "Wrong Input: " + parsed.error.message,
+        message: "Wrong Input",
+        error: errorm,
       });
     }
 
     const { email, username, name, password } = parsed.data;
-  } catch (error) {}
+
+    const userExist = await User.findOne({ email });
+
+    if (userExist) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User already exist please login" });
+    }
+
+    const usernameExist = await User.findOne({ username });
+
+    if (usernameExist) {
+      return res.status(400).json({
+        success: false,
+        message: "Username already in use please use another username",
+      });
+    }
+
+    const user = await User.create({
+      username,
+      email,
+      name,
+      password,
+    });
+    const token = genreatetoken(user._id);
+    res
+      .status(201)
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.DEV_ENV === "Production",
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .json({ success: true, message: "User created successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
 };
+
+export const login = async (req: Request, res: Response) => {};
