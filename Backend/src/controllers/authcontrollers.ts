@@ -41,7 +41,25 @@ const registerSchema = z.object({
   name: z.string().min(4).toLowerCase(),
 });
 
-const loginSchema;
+const loginSchema = z.object({
+  username: z.string().min(4),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .max(20, { message: "Password must be less than 20 characters" })
+    .refine((val) => /[A-Z]/.test(val), {
+      message: "Password must contain at least one uppercase letter",
+    })
+    .refine((val) => /[a-z]/.test(val), {
+      message: "Password must contain at least one lowercase letter",
+    })
+    .refine((val) => /[0-9]/.test(val), {
+      message: "Password must contain at least one number",
+    })
+    .refine((val) => /[!@#$%^&*]/.test(val), {
+      message: "Password must contain at least one special character",
+    }),
+});
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -100,6 +118,36 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const parsed = logins;
-  } catch (error) {}
+    const parsed = loginSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        success: false,
+        message: "wrong input" + String(parsed.error.message),
+      });
+    }
+
+    const { username, password } = parsed.data;
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User does not exist try registering",
+      });
+    }
+
+    const passmatch = await bcrypt.compare(password, user.password);
+
+    if (!passmatch) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Invalid password" });
+    }
+
+    res.status(200).json({ success: false, message: "Logged in successfully" });
+  } catch (error) {
+    console.log("An error occured while logging in", error);
+    res.status(500).json({ success: false, message: "internal server error" });
+  }
 };
