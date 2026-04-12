@@ -3,6 +3,9 @@ import z, { success } from "zod";
 import jwt from "jsonwebtoken";
 import { User } from "../models/Users.js";
 import { genreatetoken } from "../services/genToken.service.js";
+import bcrypt from "bcrypt";
+
+const salt = 10;
 
 type registerType = {
   username: string;
@@ -38,6 +41,8 @@ const registerSchema = z.object({
   name: z.string().min(4).toLowerCase(),
 });
 
+const loginSchema;
+
 export const register = async (req: Request, res: Response) => {
   try {
     const parsed = registerSchema.safeParse(req.body);
@@ -70,11 +75,13 @@ export const register = async (req: Request, res: Response) => {
       });
     }
 
+    const hashedpass = await bcrypt.hash(password, salt);
+
     const user = await User.create({
       username,
       email,
       name,
-      password,
+      password: hashedpass,
     });
     const token = genreatetoken(user._id);
     res
@@ -91,4 +98,8 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-export const login = async (req: Request, res: Response) => {};
+export const login = async (req: Request, res: Response) => {
+  try {
+    const parsed = logins;
+  } catch (error) {}
+};
