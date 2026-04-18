@@ -145,7 +145,17 @@ export const login = async (req: Request, res: Response) => {
         .json({ success: false, message: "Invalid password" });
     }
 
-    res.status(200).json({ success: true, message: "Logged in successfully" });
+    const token = genreatetoken(user._id);
+
+    res
+      .status(200)
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.DEV_ENV === "Production",
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .json({ success: true, message: "Logged in successfully" });
   } catch (error) {
     console.log("An error occured while logging in", error);
     res.status(500).json({ success: false, message: "internal server error" });

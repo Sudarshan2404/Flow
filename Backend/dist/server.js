@@ -5,6 +5,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import Authroutes from "./routes/authroutes.js";
+import { Socketconn } from "./Sockets/index.js";
 const app = express();
 dotenv.config();
 app.use(cors());
@@ -14,9 +15,11 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: " http://localhost:5173",
+        credentials: true,
     },
 });
 connectDB();
+Socketconn(io);
 // io.on("connection", (socket) => {
 //   console.log("user connected", socket.id);
 //   socket.on("join", (userid: string) => {

@@ -1,6 +1,8 @@
 import { Server } from "socket.io";
 import cookie from "cookie";
 import { verifyToken } from "../services/genToken.service.js";
+import { chatHandler } from "./chat.socket.js";
+import { presenceHandler } from "./presence.socket.js";
 
 export const Socketconn = (io: Server) => {
   io.use((socket, next) => {
@@ -27,8 +29,7 @@ export const Socketconn = (io: Server) => {
   io.on("connection", (socket) => {
     console.log("user connected", socket.id);
 
-    socket.on("join", (userid: string) => {
-      console.log(userid + "joined");
-    });
+    chatHandler(io, socket);
+    presenceHandler(io, socket);
   });
 };

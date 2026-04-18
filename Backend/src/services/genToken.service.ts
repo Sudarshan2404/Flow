@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
 export const genreatetoken = (userId: object) => {
+  const JWT_SECRET = process.env.JWT_SECRET;
+
   if (!userId) {
     return "Cannot genreate a token";
   }
@@ -15,6 +15,8 @@ export const genreatetoken = (userId: object) => {
 };
 
 export const verifyToken = (token: string) => {
+  const JWT_SECRET = process.env.JWT_SECRET;
+
   // @ts-ignore
   const decode = jwt.verify(token, JWT_SECRET);
 
