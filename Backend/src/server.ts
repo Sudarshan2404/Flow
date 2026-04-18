@@ -22,30 +22,28 @@ const io = new Server(server, {
 
 connectDB();
 
-const onlineusers = new Map<string, string>();
+// io.on("connection", (socket) => {
+//   console.log("user connected", socket.id);
 
-io.on("connection", (socket) => {
-  console.log("user connected", socket.id);
+//   socket.on("join", (userid: string) => {
+//     onlineusers.set(userid, socket.id);
+//     console.log(userid + "joined");
+//   });
 
-  socket.on("join", (userid: string) => {
-    onlineusers.set(userid, socket.id);
-    console.log(userid + "joined");
-  });
+//   socket.on("send_message", ({ to, from, message }) => {
+//     const recieverId = onlineusers.get(to);
 
-  socket.on("send_message", ({ to, from, message }) => {
-    const recieverId = onlineusers.get(to);
+//     if (recieverId) {
+//       io.to(recieverId).emit("recieved_message", {
+//         from,
+//         to,
+//         message,
+//       });
 
-    if (recieverId) {
-      io.to(recieverId).emit("recieved_message", {
-        from,
-        to,
-        message,
-      });
-
-      console.log(message);
-    }
-  });
-});
+//       console.log(message);
+//     }
+//   });
+// });
 
 server.listen(3000, () => {
   console.log("server running on http://localhost:3000");
