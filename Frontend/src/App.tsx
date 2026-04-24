@@ -10,8 +10,6 @@ const App = () => {
     socket.on("connect", () => {
       console.log("connected successfully");
     });
-
-    socket.emit("join", "user1");
   }, []);
 
   return <div>App</div>;

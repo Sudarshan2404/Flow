@@ -25,4 +25,17 @@ export const chatHandler = async (io: Server, socket: Socket) => {
       });
     }
   });
+
+  socket.on("typing", ({ conversationId }) => {
+    const user = (socket as any).user;
+    socket.to(conversationId).emit("typing", user.id);
+  });
+
+  socket.on("stop_typing", ({ conversationId }) => {
+    const user = (socket as any).user;
+
+    socket.to(conversationId).emit("stop_typing", {
+      userId: user.id,
+    });
+  });
 };

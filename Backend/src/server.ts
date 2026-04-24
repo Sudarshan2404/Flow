@@ -6,13 +6,18 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import Authroutes from "./routes/authroutes.js";
 import { Socketconn } from "./Sockets/index.js";
+import ConversationRoutes from "./routes/conversation.routes.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 dotenv.config();
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+
 app.use("/api/auth", Authroutes);
+app.use("/api", ConversationRoutes);
 
 const server = http.createServer(app);
 const io = new Server(server, {
