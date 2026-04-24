@@ -10,15 +10,16 @@ export const startConversation = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "targetUserId required" });
     }
 
-    if (userId) {
-      return res.status(400).json({ message: "targetUserId required" });
+    if (!userId) {
+      return res.status(400).json({ message: "UserId required" });
     }
+    // @ts-ignore
     let conversation = await Conversations.findOne({
       type: "private",
-      $all: { userId, targetUserId },
+      members: { $all: [userId, targetUserId], $size: 2 },
     });
 
-    if (conversation) {
+    if (!conversation) {
       conversation = await Conversations.create({
         type: "private",
         members: [userId, targetUserId],

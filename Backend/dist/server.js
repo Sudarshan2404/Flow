@@ -8,13 +8,15 @@ import Authroutes from "./routes/authroutes.js";
 import { Socketconn } from "./Sockets/index.js";
 import ConversationRoutes from "./routes/conversation.routes.js";
 import cookieParser from "cookie-parser";
+import userRoutes from "./routes/users.routes.js";
 const app = express();
 dotenv.config();
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", Authroutes);
-app.use("/api", ConversationRoutes);
+app.use("/api/conversations", ConversationRoutes);
+app.use("/api/users", userRoutes);
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
