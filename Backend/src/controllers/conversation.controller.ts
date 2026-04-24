@@ -43,7 +43,33 @@ export const startConversation = async (req: Request, res: Response) => {
 export const getUserConversations = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
-  } catch (error) {}
+
+    const conversation = await Conversations.find({
+      members: userId,
+    })
+      .sort({ updatedat: -1 })
+      .populate("lastMessage");
+
+    if (!conversation) {
+      return res.status(204).json({
+        success: true,
+        message: "No User Conversations found",
+        newUser: true,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "conversations Found",
+      conversation,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "An internal Server Error occured",
+      type: error,
+    });
+  }
 };
 
 export const test = (req: Request, res: Response, next: NextFunction) => {
